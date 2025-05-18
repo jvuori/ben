@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="fi">
+
+<head>
+    <meta charset="utf-8">
+    <title>Ben</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .highlight {
+            background-color: #d1ecf1;
+            font-weight: bold;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script>
+        // Scroll to highlighted row if it exists
+        document.addEventListener("DOMContentLoaded", function () {
+            const highlightedRow = document.querySelector(".highlight");
+            if (highlightedRow) {
+                highlightedRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <img src="{{ url_for('static', filename='ben.jpg') }}" alt="Kuva henkilöstä"
+            style="max-width: 200px; display: block; margin-left: auto; margin-right: auto; margin-bottom: 15px;">
+        <p style="text-align: center;">Ben Zyskowicz</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Ehdotus</th>
+                    <th>Lkm</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for guess in guesses %}
+                <tr class="{% if guess.surname == highlight_surname %}highlight{% endif %}"
+                    id="guess-{{ guess.surname }}">
+                    <td>{{ guess.surname }}</td>
+                    <td>{{ guess.count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p style="margin-top: 20px;"><a href="{{ url_for('index') }}">Palaa etusivulle</a></p>
+    </div>
+</body>
+
+</html>
