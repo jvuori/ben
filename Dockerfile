@@ -21,5 +21,13 @@ ENV DATABASE_DIR /database_volume # Define where the database will be stored wit
 # Declare a volume for the database directory
 VOLUME /database_volume
 
-# Run app.py when the container launches
+# Copy the entrypoint script and make it executable
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Set the entrypoint
+ENTRYPOINT ["entrypoint.sh"]
+
+# The CMD will be passed to the entrypoint script
+# The database initialization is now handled by the entrypoint script.
 CMD ["flask", "run"]
