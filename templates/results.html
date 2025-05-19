@@ -3,34 +3,61 @@
 
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ben</title>
     <style>
         body {
             font-family: sans-serif;
-            margin: 20px;
+            margin: 0;
+            /* Remove default margin */
             background-color: #f4f4f4;
             color: #333;
+            font-size: 18px;
+            /* Increased base font size */
+            line-height: 1.6;
+            /* Improved line spacing for readability */
         }
 
         .container {
             background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            max-width: 600px;
-            margin: auto;
+            padding: 15px;
+            width: 100%;
+            /* Use full width */
+            max-width: 700px;
+            /* Max width for larger screens */
+            box-sizing: border-box;
+            /* Include padding in width calculation */
+            margin: 0 auto;
+            /* Center container */
+            text-align: center;
+        }
+
+        img {
+            max-width: 200px;
+            /* Increased image size */
+            height: auto;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            /* Adjusted margin */
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            /* Adjusted margin */
+            font-size: 1em;
+            /* Table font size relative to body */
         }
 
         th,
         td {
             text-align: left;
-            padding: 8px;
+            padding: 10px;
+            /* Increased padding in table cells */
             border-bottom: 1px solid #ddd;
         }
 
@@ -52,6 +79,22 @@
         a:hover {
             text-decoration: underline;
         }
+
+        p {
+            text-align: center;
+            margin-top: 1em;
+            /* Add some top margin to paragraphs */
+            margin-bottom: 1em;
+            /* Add some bottom margin */
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            /* Increased margin */
+            font-size: 1.1em;
+            /* Make link slightly larger */
+        }
     </style>
     <script>
         // Scroll to highlighted row if it exists
@@ -66,9 +109,8 @@
 
 <body>
     <div class="container">
-        <img src="{{ url_for('static', filename='ben.jpg') }}" alt="Kuva henkilöstä"
-            style="max-width: 200px; display: block; margin-left: auto; margin-right: auto; margin-bottom: 15px;">
-        <p style="text-align: center;">Ben Zyskowicz</p>
+        <img src="{{ url_for('static', filename='ben.jpg') }}" alt="Kuva henkilöstä">
+        <p>Ben Zyskowicz</p>
         <table>
             <thead>
                 <tr>
@@ -86,7 +128,7 @@
                 {% endfor %}
             </tbody>
         </table>
-        <p style="margin-top: 20px;"><a href="{{ url_for('index') }}">Palaa etusivulle</a></p>
+        <p class="back-link"><a href="{{ url_for('index') }}">Palaa etusivulle</a></p>
     </div>
 </body>
 
