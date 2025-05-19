@@ -2,8 +2,14 @@ import sqlite3
 from pathlib import Path
 
 from flask import Flask, g, redirect, render_template, request, url_for
+from werkzeug.middleware.proxy_fix import ProxyFix  # Add this import
 
 app = Flask(__name__)
+
+# Add ProxyFix middleware
+# This tells Flask to trust the X-Forwarded-Proto header from one proxy (Nginx).
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+
 DATABASE = Path(__file__).parent / "ben.db"
 
 

@@ -1,0 +1,3 @@
+# /home/jaakko/prj/ben/requirements.txt
+Flask
+Werkzeug>=2.0
