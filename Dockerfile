@@ -16,17 +16,10 @@ EXPOSE 5000
 # Define environment variable
 ENV FLASK_APP app.py
 ENV FLASK_RUN_HOST 0.0.0.0
+ENV DATABASE_DIR /database_volume # Define where the database will be stored within the container
 
-# Declare a volume for the database file
-VOLUME /app
-
-# Initialize the database if it doesn't exist
-# This assumes you have a way to run init_db() or that the db is pre-populated
-# For a more robust solution, consider using a database migration tool or entrypoint script
-RUN if [ ! -f ben.db ]; then \
-    echo "Initializing database..." && \
-    python -c "from app import init_db; init_db()"; \
-    fi
+# Declare a volume for the database directory
+VOLUME /database_volume
 
 # Run app.py when the container launches
 CMD ["flask", "run"]

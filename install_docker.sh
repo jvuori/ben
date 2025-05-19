@@ -24,7 +24,7 @@ fi
 echo "Running Docker container ${CONTAINER_NAME} from image ${IMAGE_NAME}..."
 docker run -d \
     -p 5000:5000 \
-    -v "${DB_VOLUME_NAME}:/app" \
+    -v "${DB_VOLUME_NAME}:/database_volume" \
     --name "${CONTAINER_NAME}" \
     --restart unless-stopped \
     "${IMAGE_NAME}"
