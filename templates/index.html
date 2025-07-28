@@ -138,8 +138,8 @@
             <img src="{{ url_for('static', filename='ben.jpg') }}" alt="Kuva henkilöstä">
         <form action="{{ url_for('submit_guess') }}" method="post">
             <label for="surname_input">No siinähän on <b>Ben</b></label>
-            <input type="text" id="surname_input" name="surname" required>
-            <input type="submit">
+            <input type="text" id="surname_input" name="surname" placeholder="Sukunimi" required autofocus>
+            <input type="submit" value="Send">
         </form>
     </div>
 </body>
