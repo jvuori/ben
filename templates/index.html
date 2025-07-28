@@ -129,6 +129,30 @@
             }
         }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const surnameInput = document.getElementById('surname_input');
+            const submitButton = document.querySelector('input[type="submit"]');
+
+            // Initially disable the submit button
+            submitButton.disabled = true;
+            submitButton.style.opacity = '0.5';
+
+            // Function to check validation
+            function checkValidation() {
+                const value = surnameInput.value;
+                const isValid = surnameInput.checkValidity() && value.length >= 4;
+
+                submitButton.disabled = !isValid;
+                submitButton.style.opacity = isValid ? '1' : '0.5';
+                submitButton.style.cursor = isValid ? 'pointer' : 'not-allowed';
+            }
+
+            // Check validation on input
+            surnameInput.addEventListener('input', checkValidation);
+            surnameInput.addEventListener('keyup', checkValidation);
+        });
+    </script>
 </head>
 
 <body>
@@ -138,7 +162,9 @@
             <img src="{{ url_for('static', filename='ben.jpg') }}" alt="Kuva henkilöstä">
         <form action="{{ url_for('submit_guess') }}" method="post">
             <label for="surname_input">No siinähän on <b>Ben</b></label>
-            <input type="text" id="surname_input" name="surname" placeholder="Sukunimi" required autofocus>
+            <input type="text" id="surname_input" name="surname" placeholder="Sukunimi" required autofocus minlength="4"
+                pattern="^(?=.*[szc])(?=.*[fwv]).{4,}$"
+                title="Sukunimen tulee olla vähintään 4 merkkiä pitkä ja sisältää vähintään yksi kirjain s, z tai c sekä vähintään yksi kirjain f, w tai v">
             <input type="submit" value="Send">
         </form>
     </div>
