@@ -6,20 +6,24 @@
 #     "lxml",
 # ]
 # ///
-"""
-Script to parse Ben Zyskowicz surname variations from HTML file and populate database.
-"""
+"""Script to parse Ben Zyskowicz surname variations from HTML file and populate database."""
 
+import os
 import sqlite3
 from pathlib import Path
 
 from bs4 import BeautifulSoup
 
 
+def get_database_path():
+    """Get the database path, matching the same logic as app.py and setup_db.py."""
+    database_dir = Path(os.getenv("DATABASE_DIR", Path(__file__).parent / "data"))
+    return database_dir / "ben.db"
+
+
 def parse_html_table(html_file_path):
     """Parse the HTML file and extract surname variations with their counts."""
-
-    with open(html_file_path, "r", encoding="windows-1252") as f:
+    with open(html_file_path, encoding="windows-1252") as f:
         content = f.read()
 
     soup = BeautifulSoup(content, "html.parser")
@@ -70,7 +74,6 @@ def create_database_connection(db_path):
 
 def populate_database(surnames_data, db_path):
     """Populate the database with surname variations."""
-
     conn = create_database_connection(db_path)
     cursor = conn.cursor()
 
@@ -82,7 +85,8 @@ def populate_database(surnames_data, db_path):
     for surname, count in surnames_data:
         try:
             cursor.execute(
-                "INSERT INTO guesses (surname, count) VALUES (?, ?)", (surname, count)
+                "INSERT INTO guesses (surname, count) VALUES (?, ?)",
+                (surname, count),
             )
             inserted_count += 1
         except sqlite3.IntegrityError:
@@ -93,17 +97,16 @@ def populate_database(surnames_data, db_path):
     conn.close()
 
     print(
-        f"Successfully inserted {inserted_count} surname variations into the database."
+        f"Successfully inserted {inserted_count} surname variations into the database.",
     )
     return inserted_count
 
 
 def main():
-    """Main function to parse HTML and populate database."""
-
+    """Parse HTML and populate database."""
     # Paths
     html_file = Path("Lintukoto _ Viihde _ Ben.html")
-    db_file = Path("ben.db")
+    db_file = get_database_path()
 
     if not html_file.exists():
         print(f"HTML file not found: {html_file}")

@@ -1,0 +1,63 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+CI_CD_PLAN.md
+docs/
+
+# Development files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.pytest_cache/
+.coverage
+
+# Environment
+.env
+.venv
+venv/
+
+# Database files (will be mounted from host)
+ben.db
+data/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Backup files
+*.bak
+*.backup
+
+# HTML data files (only needed for initial parsing)
+*.html
+*_tiedostot/
+
+# Scripts not needed in container
+build_docker.sh
+install_docker.sh
+
+# Docker files
+docker-compose.yml
+Dockerfile
+.dockerignore

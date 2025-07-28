@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.12-slim
+FROM python:3.13-slim
 
 # Set the working directory in the container
 WORKDIR /app
@@ -7,8 +7,11 @@ WORKDIR /app
 # Copy the current directory contents into the container at /app
 COPY . /app/
 
-# Install any needed packages specified in requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+# Install uv for dependency management
+RUN pip install --no-cache-dir uv
+
+# Install dependencies using uv
+RUN uv sync
 
 # Make port 5000 available to the world outside this container
 EXPOSE 5000
@@ -16,18 +19,7 @@ EXPOSE 5000
 # Define environment variable
 ENV FLASK_APP app.py
 ENV FLASK_RUN_HOST 0.0.0.0
-ENV DATABASE_DIR /database_volume # Define where the database will be stored within the container
+ENV DATABASE_DIR /app/data
 
-# Declare a volume for the database directory
-VOLUME /database_volume
-
-# Copy the entrypoint script and make it executable
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
-# Set the entrypoint
-ENTRYPOINT ["entrypoint.sh"]
-
-# The CMD will be passed to the entrypoint script
-# The database initialization is now handled by the entrypoint script.
-CMD ["flask", "run"]
+# The CMD runs the Flask application directly
+CMD ["uv", "run", "python", "app.py"]

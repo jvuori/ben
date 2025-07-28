@@ -8,16 +8,20 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 
+
 # Define the directory for the database, configurable via environment variable
 # Defaults to a 'data' subdirectory in the app's root if not set.
-DATABASE_PARENT_DIR = Path(os.getenv("DATABASE_DIR", Path(__file__).parent / "data"))
-DATABASE = DATABASE_PARENT_DIR / "ben.db"
+def get_database_path():
+    """Get the database path, allowing for runtime environment variable changes."""
+    database_dir = Path(os.getenv("DATABASE_DIR", Path(__file__).parent / "data"))
+    return database_dir / "ben.db"
 
 
 def get_db():
     db = getattr(g, "_database", None)
     if db is None:
-        db = g._database = sqlite3.connect(DATABASE)
+        database_path = get_database_path()
+        db = g._database = sqlite3.connect(database_path)
         db.row_factory = sqlite3.Row  # Allows accessing columns by name
     return db
 
@@ -27,18 +31,6 @@ def close_connection(exception):
     db = getattr(g, "_database", None)
     if db is not None:
         db.close()
-
-
-def init_db():
-    # Ensure the database directory exists
-    DATABASE_PARENT_DIR.mkdir(
-        parents=True, exist_ok=True
-    )  # Ensure directory is created
-    with app.app_context():
-        db = get_db()
-        with app.open_resource("schema.sql", mode="r") as f:
-            db.cursor().executescript(f.read())
-        db.commit()
 
 
 @app.route("/")
@@ -64,11 +56,13 @@ def submit_guess():
     if row:
         new_count = row["count"] + 1
         cursor.execute(
-            "UPDATE guesses SET count = ? WHERE surname = ?", (new_count, surname)
+            "UPDATE guesses SET count = ? WHERE surname = ?",
+            (new_count, surname),
         )
     else:
         cursor.execute(
-            "INSERT INTO guesses (surname, count) VALUES (?, ?)", (surname, 1)
+            "INSERT INTO guesses (surname, count) VALUES (?, ?)",
+            (surname, 1),
         )
 
     db.commit()
@@ -82,17 +76,34 @@ def results():
     highlight_surname = request.args.get("highlight")
     db = get_db()
     cursor = db.cursor()
-    cursor.execute("SELECT surname, count FROM guesses ORDER BY count DESC, surname ASC")
+    cursor.execute(
+        "SELECT surname, count FROM guesses ORDER BY count DESC, surname ASC",
+    )
     all_guesses = cursor.fetchall()
 
     return render_template(
-        "results.html", guesses=all_guesses, highlight_surname=highlight_surname
+        "results.html",
+        guesses=all_guesses,
+        highlight_surname=highlight_surname,
     )
 
 
+@app.route("/health")
+def health():
+    """Health check endpoint for container orchestration."""
+    try:
+        # Test database connectivity
+        db = get_db()
+        cursor = db.cursor()
+        cursor.execute("SELECT COUNT(*) FROM guesses LIMIT 1")
+        cursor.fetchone()
+    except sqlite3.Error as e:
+        return {"status": "unhealthy", "error": str(e)}, 500
+    else:
+        return {"status": "healthy", "database": "connected"}, 200
+
+
 if __name__ == "__main__":
-    # Create schema.sql before running for the first time
-    # For simplicity, we'll create it here if it doesn't exist,
-    # or you can create it manually.
-    # init_db() # Call this manually or ensure schema.sql exists and is run
-    app.run(debug=True)
+    port = int(os.getenv("PORT", "5000"))
+    # Bind to all interfaces when running in container
+    app.run(host="0.0.0.0", port=port, debug=False)  # noqa: S104
