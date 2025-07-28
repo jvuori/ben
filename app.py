@@ -82,7 +82,7 @@ def results():
     highlight_surname = request.args.get("highlight")
     db = get_db()
     cursor = db.cursor()
-    cursor.execute("SELECT surname, count FROM guesses ORDER BY surname ASC")
+    cursor.execute("SELECT surname, count FROM guesses ORDER BY count DESC, surname ASC")
     all_guesses = cursor.fetchall()
 
     return render_template(
