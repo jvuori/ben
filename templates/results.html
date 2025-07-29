@@ -96,6 +96,11 @@
             font-size: 1.1em;
             /* Make link slightly larger */
         }
+
+        .correct-answer {
+            color: #28a745;
+            /* Green color for correct answer */
+        }
     </style>
     <script>
         // Scroll to highlighted row if it exists
@@ -124,7 +129,8 @@
                 {% for guess in guesses %}
                 <tr class="{% if guess.surname == highlight_surname %}highlight{% endif %}"
                     id="guess-{{ guess.surname }}">
-                    <td>{{ guess.surname }}</td>
+                    <td class="{% if guess.surname.lower() == 'zyskowicz' %}correct-answer{% endif %}">{{ guess.surname
+                        }}{% if guess.surname.lower() == 'zyskowicz' %} (oikea vastaus){% endif %}</td>
                     <td>{{ guess.count }}</td>
                 </tr>
                 {% endfor %}
