@@ -145,12 +145,26 @@
             // Function to check validation
             function checkValidation() {
                 const value = surnameInput.value;
-                const isValid = surnameInput.checkValidity() && value.length >= 4;
+                const isValid = surnameInput.checkValidity() && value.length >= 6;
 
                 submitButton.disabled = !isValid;
                 submitButton.style.opacity = isValid ? '1' : '0.5';
                 submitButton.style.cursor = isValid ? 'pointer' : 'not-allowed';
             }
+
+            // Function to filter input to only allow letters
+            function filterInput(event) {
+                const char = String.fromCharCode(event.which);
+                // Allow only letters (including Finnish characters and accented y), backspace, delete, arrow keys
+                if (!/^[a-zA-ZäöåÄÖÅýÝÿŸ]$/.test(char) &&
+                    ![8, 9, 37, 38, 39, 40, 46].includes(event.which) &&
+                    !event.ctrlKey && !event.metaKey) {
+                    event.preventDefault();
+                }
+            }
+
+            // Prevent non-letter input
+            surnameInput.addEventListener('keypress', filterInput);
 
             // Check validation on input
             surnameInput.addEventListener('input', checkValidation);
@@ -166,9 +180,9 @@
             <img src="{{ url_for('static', filename='ben.jpg') }}" alt="Kuva henkilöstä">
         <form action="{{ url_for('submit_guess') }}" method="post">
             <label for="surname_input">No siinähän on <b>Ben</b></label>
-            <input type="text" id="surname_input" name="surname" placeholder="Sukunimi" required autofocus minlength="4"
-                pattern="^(?=.*[szc])(?=.*[fwv]).{4,}$"
-                title="Sukunimen tulee olla vähintään 4 merkkiä pitkä ja sisältää vähintään yksi kirjain s, z tai c sekä vähintään yksi kirjain f, w tai v">
+            <input type="text" id="surname_input" name="surname" placeholder="Sukunimi" required autofocus minlength="6"
+                pattern="^[zZsStTcC][a-zA-ZäöåÄÖÅüÜýÝÿŸ]{5,14}$"
+                title="Sukunimen pitää alkaa kirjaimella Z, S, T tai C ja olla 6-15 merkkiä pitkä" maxlength="15">
             <input type="submit" value="Send">
         </form>
 
