@@ -120,20 +120,36 @@ def results():
     highlight_surname = request.args.get("highlight")
     db = get_db()
     cursor = db.cursor()
-    
+
     # Get all guesses ordered by count
     cursor.execute(
         "SELECT surname, count FROM guesses ORDER BY count DESC, surname ASC",
     )
     all_guesses = cursor.fetchall()
-    
+
     # Count total number of different variations
     cursor.execute("SELECT COUNT(*) as total_variations FROM guesses")
     total_variations = cursor.fetchone()["total_variations"]
 
+    # Calculate total count for percentage calculations
+    cursor.execute("SELECT SUM(count) as total_count FROM guesses")
+    total_count = cursor.fetchone()["total_count"]
+
+    # Add percentage to each guess
+    guesses_with_percentages = []
+    for guess in all_guesses:
+        percentage = (guess["count"] / total_count * 100) if total_count > 0 else 0
+        guesses_with_percentages.append(
+            {
+                "surname": guess["surname"],
+                "count": guess["count"],
+                "percentage": round(percentage, 1),
+            }
+        )
+
     return render_template(
         "results.html",
-        guesses=all_guesses,
+        guesses=guesses_with_percentages,
         highlight_surname=highlight_surname,
         total_variations=total_variations,
     )
