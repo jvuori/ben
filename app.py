@@ -143,8 +143,8 @@ def results():
             {
                 "surname": guess["surname"],
                 "count": guess["count"],
-                "percentage": round(percentage, 1),
-            }
+                "percentage": round(percentage, 2),
+            },
         )
 
     return render_template(
