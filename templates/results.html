@@ -101,6 +101,13 @@
             color: #28a745;
             /* Green color for correct answer */
         }
+
+        .variations-count {
+            font-size: 0.9em;
+            /* Smaller text for variations count */
+            color: #666;
+            /* Slightly muted color */
+        }
     </style>
     <script>
         // Scroll to highlighted row if it exists
@@ -117,6 +124,7 @@
     <div class="container">
         <img src="{{ url_for('static', filename='ben.jpg') }}" alt="Kuva henkilöstä">
         <p>Ben Zyskowicz</p>
+        <p class="variations-count">Nimi voidaan kirjoittaa {{ total_variations }} tavalla</p>
         <p class="back-link"><a href="{{ url_for('index') }}">Palaa etusivulle</a></p>
         <table>
             <thead>

@@ -120,15 +120,22 @@ def results():
     highlight_surname = request.args.get("highlight")
     db = get_db()
     cursor = db.cursor()
+    
+    # Get all guesses ordered by count
     cursor.execute(
         "SELECT surname, count FROM guesses ORDER BY count DESC, surname ASC",
     )
     all_guesses = cursor.fetchall()
+    
+    # Count total number of different variations
+    cursor.execute("SELECT COUNT(*) as total_variations FROM guesses")
+    total_variations = cursor.fetchone()["total_variations"]
 
     return render_template(
         "results.html",
         guesses=all_guesses,
         highlight_surname=highlight_surname,
+        total_variations=total_variations,
     )
 
 
