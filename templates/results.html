@@ -111,6 +111,7 @@
     <div class="container">
         <img src="{{ url_for('static', filename='ben.jpg') }}" alt="Kuva henkilöstä">
         <p>Ben Zyskowicz</p>
+        <p class="back-link"><a href="{{ url_for('index') }}">Palaa etusivulle</a></p>
         <table>
             <thead>
                 <tr>
@@ -128,7 +129,6 @@
                 {% endfor %}
             </tbody>
         </table>
-        <p class="back-link"><a href="{{ url_for('index') }}">Palaa etusivulle</a></p>
     </div>
 </body>
 
