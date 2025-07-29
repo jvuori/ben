@@ -189,6 +189,9 @@ def populate_database(
 ) -> None:
     """Populate database with surname data, handling duplicates by adding counts.
 
+    This function always clears and repopulates the database.
+    It should only be called by CI/CD when the database file is missing.
+
     Args:
         surnames_data: List of (surname, count) tuples
         db_path: Path to the SQLite database file
@@ -197,7 +200,22 @@ def populate_database(
     conn = create_database_connection(db_path)
     cursor = conn.cursor()
 
-    # First clear existing data
+    # Create schema first (in case database is completely new)
+    schema_path = Path(__file__).parent / "schema.sql"
+    if schema_path.exists():
+        with schema_path.open() as f:
+            cursor.executescript(f.read())
+    else:
+        # Fallback: create table manually if schema.sql not found
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS guesses (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                surname TEXT NOT NULL UNIQUE,
+                count INTEGER NOT NULL DEFAULT 0
+            )
+        """)
+
+    # Clear existing data and repopulate
     cursor.execute("DELETE FROM guesses")
 
     # Aggregate duplicate surnames
@@ -218,7 +236,7 @@ def populate_database(
     conn.commit()
     conn.close()
 
-    print(f"Inserted {len(surname_totals)} unique surnames with total counts.")
+    print(f"Database populated with {len(surname_totals)} unique surnames.")
 
 
 def main() -> None:
