@@ -88,31 +88,31 @@ def submit_guess():
         # Redirect back to index if validation fails
         return redirect(url_for("index"))
 
-    # Capitalize the surname (Pascal case)
-    surname = surname.capitalize()
+    # Normalize to lowercase for database operations (consistent with parser)
+    surname_normalized = surname.lower()
 
     db = get_db()
     cursor = db.cursor()
 
-    cursor.execute("SELECT count FROM guesses WHERE surname = ?", (surname,))
+    cursor.execute("SELECT count FROM guesses WHERE surname = ?", (surname_normalized,))
     row = cursor.fetchone()
 
     if row:
         new_count = row["count"] + 1
         cursor.execute(
             "UPDATE guesses SET count = ? WHERE surname = ?",
-            (new_count, surname),
+            (new_count, surname_normalized),
         )
     else:
         cursor.execute(
             "INSERT INTO guesses (surname, count) VALUES (?, ?)",
-            (surname, 1),
+            (surname_normalized, 1),
         )
 
     db.commit()
 
-    # Redirect to results page, passing the submitted surname for highlighting
-    return redirect(url_for("results", highlight=surname))
+    # Redirect to results page, passing the normalized surname for highlighting
+    return redirect(url_for("results", highlight=surname_normalized))
 
 
 @app.route("/results")

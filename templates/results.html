@@ -138,9 +138,9 @@
                 {% for guess in guesses %}
                 <tr class="{% if guess.surname == highlight_surname %}highlight{% endif %}"
                     id="guess-{{ guess.surname }}">
-                    <td class="{% if guess.surname.lower() == 'zyskowicz' %}correct-answer{% endif %}">{{
+                    <td class="{% if guess.surname == 'zyskowicz' %}correct-answer{% endif %}">{{
                         guess.surname.capitalize()
-                        }}{% if guess.surname.lower() == 'zyskowicz' %} (oikea vastaus){% endif %}</td>
+                        }}{% if guess.surname == 'zyskowicz' %} (oikea vastaus){% endif %}</td>
                     <td>{{ guess.count }}</td>
                     <td>{{ guess.percentage }}%</td>
                 </tr>
