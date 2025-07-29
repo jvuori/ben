@@ -44,6 +44,8 @@
             display: block;
             margin-left: auto;
             margin-right: auto;
+            cursor: help;
+            /* Show help cursor on hover to indicate tooltip */
         }
 
         form {
@@ -132,6 +134,22 @@
                 /* Auto width for inline layout */
             }
         }
+
+        .bottom-credit {
+            font-size: 0.6em;
+            color: #999;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .bottom-credit a {
+            color: #999;
+            text-decoration: none;
+        }
+
+        .bottom-credit a:hover {
+            text-decoration: underline;
+        }
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -177,16 +195,23 @@
     <div class="container">
         <p>Kuka on tämä suomalainen poliitikko?</p>
         <p>
-            <img src="{{ url_for('static', filename='ben.jpg') }}" alt="Kuva henkilöstä">
+            <img src="{{ url_for('static', filename='ben.jpg') }}" alt="Kuva henkilöstä"
+                title="Kuva: Wikipedia / CC BY-SA 4.0 / Muokattu: pienennetty ja pakattu verkkokäyttöön">
+        </p>
         <form action="{{ url_for('submit_guess') }}" method="post">
             <label for="surname_input">No siinähän on <b>Ben</b></label>
             <input type="text" id="surname_input" name="surname" placeholder="Sukunimi" required autofocus minlength="6"
                 pattern="^[zZsStTcC][a-zA-ZäöåÄÖÅüÜýÝÿŸ]{5,14}$"
-                title="Sukunimen pitää alkaa kirjaimella Z, S, T tai C ja olla 6-15 merkkiä pitkä" maxlength="15">
+                title="Sukunimen pitää olla edes etäisesti oikeanlainen" maxlength="15">
             <input type="submit" value="Send">
         </form>
 
         <p style="margin-top: 20px;"><a href="{{ url_for('results') }}">Näytä muiden vastaukset</a></p>
+
+        <div class="bottom-credit">
+            Alkuperäinen idea: <a href="https://www.lintukoto.net/viihde/ben/index.php"
+                target="_blank">https://www.lintukoto.net/viihde/ben/index.php</a>
+        </div>
     </div>
 </body>
 
