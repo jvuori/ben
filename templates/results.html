@@ -130,6 +130,38 @@
             color: #666;
             /* Slightly muted color */
         }
+
+        /* Mobile responsive styles */
+        @media (max-width: 768px) {
+            .container {
+                max-width: 100%;
+                margin: 0;
+            }
+
+            .header-area {
+                padding: 10px;
+            }
+
+            .results-area {
+                padding: 0 10px 10px 10px;
+            }
+
+            table {
+                font-size: 0.9em;
+                /* Slightly smaller font on mobile */
+            }
+
+            th,
+            td {
+                padding: 8px 6px;
+                /* Reduced padding on mobile */
+            }
+
+            /* Ensure table doesn't overflow */
+            .results-area {
+                overflow-x: hidden;
+            }
+        }
     </style>
     <script>
         // Scroll to highlighted row if it exists within the results area
@@ -138,25 +170,25 @@
             if (highlightedRow) {
                 const resultsArea = document.querySelector(".results-area");
                 const table = highlightedRow.closest('table');
-                
+
                 // Wait for layout to be complete
-                setTimeout(function() {
+                setTimeout(function () {
                     // Get positions relative to the results area
                     const resultsAreaRect = resultsArea.getBoundingClientRect();
                     const highlightedRowRect = highlightedRow.getBoundingClientRect();
-                    
+
                     // Calculate the offset from the top of the results area
                     const rowOffsetFromTop = highlightedRowRect.top - resultsAreaRect.top + resultsArea.scrollTop;
-                    
+
                     // Calculate desired scroll position to center the row
                     const resultsAreaHeight = resultsArea.clientHeight;
                     const rowHeight = highlightedRow.offsetHeight;
                     const targetScrollTop = rowOffsetFromTop - (resultsAreaHeight / 2) + (rowHeight / 2);
-                    
+
                     // Add some extra padding to ensure the row is clearly visible
                     const padding = rowHeight * 2;
                     const finalScrollTop = Math.max(0, targetScrollTop - padding);
-                    
+
                     resultsArea.scrollTop = finalScrollTop;
                 }, 100);
             }
