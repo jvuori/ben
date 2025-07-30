@@ -16,11 +16,14 @@
             /* Increased base font size */
             line-height: 1.6;
             /* Improved line spacing for readability */
+            height: 100vh;
+            /* Full viewport height */
+            overflow: hidden;
+            /* Prevent body scroll */
         }
 
         .container {
             background-color: #fff;
-            padding: 15px;
             width: 100%;
             /* Use full width */
             max-width: 700px;
@@ -30,6 +33,25 @@
             margin: 0 auto;
             /* Center container */
             text-align: center;
+            height: 100vh;
+            /* Full viewport height */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-area {
+            padding: 15px;
+            flex-shrink: 0;
+            /* Prevent header from shrinking */
+            background-color: #fff;
+        }
+
+        .results-area {
+            flex: 1;
+            /* Take remaining space */
+            overflow-y: auto;
+            /* Enable vertical scrolling */
+            padding: 0 15px 15px 15px;
         }
 
         img {
@@ -110,11 +132,33 @@
         }
     </style>
     <script>
-        // Scroll to highlighted row if it exists
+        // Scroll to highlighted row if it exists within the results area
         document.addEventListener("DOMContentLoaded", function () {
             const highlightedRow = document.querySelector(".highlight");
             if (highlightedRow) {
-                highlightedRow.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                const resultsArea = document.querySelector(".results-area");
+                const table = highlightedRow.closest('table');
+                
+                // Wait for layout to be complete
+                setTimeout(function() {
+                    // Get positions relative to the results area
+                    const resultsAreaRect = resultsArea.getBoundingClientRect();
+                    const highlightedRowRect = highlightedRow.getBoundingClientRect();
+                    
+                    // Calculate the offset from the top of the results area
+                    const rowOffsetFromTop = highlightedRowRect.top - resultsAreaRect.top + resultsArea.scrollTop;
+                    
+                    // Calculate desired scroll position to center the row
+                    const resultsAreaHeight = resultsArea.clientHeight;
+                    const rowHeight = highlightedRow.offsetHeight;
+                    const targetScrollTop = rowOffsetFromTop - (resultsAreaHeight / 2) + (rowHeight / 2);
+                    
+                    // Add some extra padding to ensure the row is clearly visible
+                    const padding = rowHeight * 2;
+                    const finalScrollTop = Math.max(0, targetScrollTop - padding);
+                    
+                    resultsArea.scrollTop = finalScrollTop;
+                }, 100);
             }
         });
     </script>
@@ -122,31 +166,35 @@
 
 <body>
     <div class="container">
-        <img src="{{ url_for('static', filename='ben.jpg') }}" alt="Kuva henkilöstä">
-        <p>Ben Zyskowicz</p>
-        <p class="variations-count">Nimi voidaan kirjoittaa {{ total_variations }} tavalla</p>
-        <p class="back-link"><a href="{{ url_for('index') }}">Palaa etusivulle</a></p>
-        <table>
-            <thead>
-                <tr>
-                    <th>Ehdotus</th>
-                    <th>Lkm</th>
-                    <th>%</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for guess in guesses %}
-                <tr class="{% if guess.surname == highlight_surname %}highlight{% endif %}"
-                    id="guess-{{ guess.surname }}">
-                    <td class="{% if guess.surname == 'zyskowicz' %}correct-answer{% endif %}">{{
-                        guess.surname.capitalize()
-                        }}{% if guess.surname == 'zyskowicz' %} (oikea vastaus){% endif %}</td>
-                    <td>{{ guess.count }}</td>
-                    <td>{{ guess.percentage }}%</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="header-area">
+            <img src="{{ url_for('static', filename='ben.jpg') }}" alt="Kuva henkilöstä">
+            <p>Ben Zyskowicz</p>
+            <p class="variations-count">Nimi voidaan kirjoittaa {{ total_variations }} tavalla</p>
+            <p class="back-link"><a href="{{ url_for('index') }}">Palaa etusivulle</a></p>
+        </div>
+        <div class="results-area">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ehdotus</th>
+                        <th>Lkm</th>
+                        <th>%</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for guess in guesses %}
+                    <tr class="{% if guess.surname == highlight_surname %}highlight{% endif %}"
+                        id="guess-{{ guess.surname }}">
+                        <td class="{% if guess.surname == 'zyskowicz' %}correct-answer{% endif %}">{{
+                            guess.surname.capitalize()
+                            }}{% if guess.surname == 'zyskowicz' %} (oikea vastaus){% endif %}</td>
+                        <td>{{ guess.count }}</td>
+                        <td>{{ guess.percentage }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </body>
 
