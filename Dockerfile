@@ -20,6 +20,16 @@ EXPOSE 5000
 ENV FLASK_APP app.py
 ENV FLASK_RUN_HOST 0.0.0.0
 ENV DATABASE_DIR /app/data
+ENV LOGS_DIR /app/logs
+
+# Create necessary directories
+RUN mkdir -p /app/data /app/logs
+
+# Ensure the logs directory is writable
+RUN chmod 755 /app/logs
+
+# Declare volumes for external mounting
+VOLUME ["/app/data", "/app/logs"]
 
 # The CMD runs the Flask application directly
 CMD ["uv", "run", "python", "app.py"]

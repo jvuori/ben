@@ -136,12 +136,22 @@ jobs:
           cp ${{ github.workspace }}/docker-compose.yml .
           echo "Docker compose file copied to deployment directory"
 
-      - name: Setup database if not exists
+      - name: Setup deployment environment
         run: |
           # Ensure /srv/ben directory exists with proper permissions
           sudo mkdir -p /srv/ben
           sudo chown $USER:$USER /srv/ben
 
+          cd /srv/ben
+
+          # Create logs directory and audit log file if they don't exist
+          mkdir -p logs
+          touch logs/audit.log
+          chmod 644 logs/audit.log
+          echo "Logs directory and audit log file prepared"
+
+      - name: Setup database if not exists
+        run: |
           cd /srv/ben
           if [ ! -f ben.db ]; then
             echo "Database not found. Creating and populating database..."
@@ -255,6 +265,36 @@ jobs:
             echo "Database integrity check passed"
           else
             echo "ERROR: Database file not found after deployment"
+            exit 1
+          fi
+
+      - name: Verify audit logging setup
+        run: |
+          cd /srv/ben
+          # Check that audit log file exists and is writable
+          if [ -f logs/audit.log ]; then
+            echo "✅ Audit log file exists at logs/audit.log"
+            
+            # Check that the container can write to the audit log
+            INITIAL_SIZE=$(stat -c%s logs/audit.log)
+            
+            # Make a test request to trigger audit logging
+            curl -s -X POST -d "surname=testaudit$(date +%s)" http://localhost:5000/submit || true
+            sleep 2
+            
+            NEW_SIZE=$(stat -c%s logs/audit.log)
+            if [ "$NEW_SIZE" -gt "$INITIAL_SIZE" ]; then
+              echo "✅ Audit logging is working - log file size increased from $INITIAL_SIZE to $NEW_SIZE bytes"
+              
+              # Show last few lines of audit log
+              echo "Recent audit log entries:"
+              tail -n 3 logs/audit.log
+            else
+              echo "❌ Audit logging may not be working - log file size unchanged"
+              exit 1
+            fi
+          else
+            echo "❌ Audit log file not found"
             exit 1
           fi
 

@@ -13,6 +13,7 @@ services:
     environment:
       - FLASK_ENV=production
       - DATABASE_DIR=/app/data
+      - LOGS_DIR=/app/logs
       - PORT=5000
       - LOG_LEVEL=INFO
     healthcheck:

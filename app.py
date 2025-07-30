@@ -1,3 +1,4 @@
+import logging
 import os
 import re
 import sqlite3
@@ -7,7 +8,43 @@ from flask import Flask, g, redirect, render_template, request, url_for
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 app = Flask(__name__)
-app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)  # type: ignore[assignment]
+
+
+# Setup audit logging
+def setup_audit_logger() -> logging.Logger:
+    """Set up audit logger for user guess submissions."""
+    audit_logger = logging.getLogger("audit")
+    audit_logger.setLevel(logging.INFO)
+
+    # Create logs directory if it doesn't exist
+    logs_dir = Path(os.getenv("LOGS_DIR", Path(__file__).parent / "logs"))
+    logs_dir.mkdir(exist_ok=True)
+
+    # Create file handler for audit log
+    audit_log_path = logs_dir / "audit.log"
+    handler = logging.FileHandler(audit_log_path)
+    handler.setLevel(logging.INFO)
+
+    # Create formatter for audit logs
+    formatter = logging.Formatter("%(asctime)s - %(message)s")
+    handler.setFormatter(formatter)
+
+    # Add handler to logger if not already added
+    if not audit_logger.handlers:
+        audit_logger.addHandler(handler)
+
+    return audit_logger
+
+
+# Initialize audit logger
+audit_logger = setup_audit_logger()
+
+
+def log_user_guess(surname: str, client_ip: str) -> None:
+    """Log user guess submission for audit purposes."""
+    audit_logger.info("%s - %s", client_ip, surname)
+
 
 # Constants for validation
 MIN_SURNAME_LENGTH = 4  # Minimum for game requirements
@@ -90,6 +127,15 @@ def submit_guess():
 
     # Normalize to lowercase for database operations (consistent with parser)
     surname_normalized = surname.lower()
+
+    # Get client IP for audit logging
+    client_ip = request.environ.get("HTTP_X_FORWARDED_FOR", request.remote_addr)
+    if client_ip and "," in client_ip:
+        # If multiple IPs in X-Forwarded-For, take the first one (original client)
+        client_ip = client_ip.split(",")[0].strip()
+
+    # Log the guess for audit purposes
+    log_user_guess(surname_normalized, client_ip or "unknown")
 
     db = get_db()
     cursor = db.cursor()
