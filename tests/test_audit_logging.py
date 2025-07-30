@@ -1,6 +1,5 @@
 """Tests for audit logging functionality."""
 
-import json
 import logging
 import tempfile
 from pathlib import Path
@@ -48,21 +47,17 @@ def test_log_user_guess():
             # Verify log entry
             assert "192.168.1.1" in log_content
             assert "zyskowicz" in log_content
-            assert "guess_submitted" in log_content
 
-            # Parse the JSON part
+            # Parse the simple format: timestamp - client_ip - surname
             log_lines = log_content.strip().split("\n")
             assert len(log_lines) == 1
 
-            # Extract JSON from log line (after timestamp)
-            log_parts = log_lines[0].split(" - ", 1)
-            assert len(log_parts) == 2
-
-            json_data = json.loads(log_parts[1])
-            assert json_data["client_ip"] == "192.168.1.1"
-            assert json_data["guess"] == "zyskowicz"
-            assert json_data["action"] == "guess_submitted"
-            assert "timestamp" in json_data
+            # Check the format: should be "timestamp - client_ip - surname"
+            log_parts = log_lines[0].split(" - ")
+            # timestamp, client_ip, surname (and possibly more timestamp parts)
+            assert len(log_parts) >= 3
+            assert "192.168.1.1" in log_parts
+            assert "zyskowicz" in log_parts
 
 
 def test_log_user_guess_with_unknown_ip():
