@@ -155,6 +155,40 @@
         .bottom-credit a:hover {
             text-decoration: underline;
         }
+
+        /* Mobile landscape mode - smaller image to save vertical space */
+        @media screen and (max-width: 900px) and (max-height: 500px) {
+            img {
+                max-width: 140px !important;
+                /* Smaller size for landscape to save vertical space */
+                margin-bottom: 10px !important;
+            }
+
+            .container {
+                padding: 10px !important;
+                /* Reduced padding in landscape */
+            }
+
+            p {
+                margin: 0.5em 0 !important;
+                /* Tighter margins */
+            }
+
+            form {
+                margin: 10px 0 !important;
+                /* Tighter form margins */
+            }
+
+            label {
+                margin-bottom: 5px !important;
+                /* Reduced margin */
+            }
+
+            input[type="text"] {
+                margin-bottom: 8px !important;
+                /* Reduced margin */
+            }
+        }
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', function () {

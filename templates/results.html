@@ -16,10 +16,8 @@
             /* Increased base font size */
             line-height: 1.6;
             /* Improved line spacing for readability */
-            height: 100vh;
-            /* Full viewport height */
-            overflow: hidden;
-            /* Prevent body scroll */
+            min-height: 100vh;
+            /* Minimum viewport height, allows growth */
         }
 
         .container {
@@ -33,8 +31,8 @@
             margin: 0 auto;
             /* Center container */
             text-align: center;
-            height: 100vh;
-            /* Full viewport height */
+            min-height: 100vh;
+            /* Minimum viewport height, allows growth */
             display: flex;
             flex-direction: column;
         }
@@ -49,9 +47,9 @@
         .results-area {
             flex: 1;
             /* Take remaining space */
-            overflow-y: auto;
-            /* Enable vertical scrolling */
             padding: 0 15px 15px 15px;
+            /* On larger screens, limit height and scroll within container */
+            overflow-y: auto;
         }
 
         img {
@@ -237,34 +235,151 @@
                 /* Tighter cell padding */
             }
         }
+
+        /* Mobile landscape mode - completely different approach */
+        @media screen and (max-width: 900px) and (max-height: 500px) {
+            /* Reset everything for landscape */
+            html, body {
+                overflow: hidden !important;
+                height: 100vh !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .container {
+                /* Use flex layout for sticky header + scrollable content */
+                display: flex !important;
+                flex-direction: column !important;
+                height: 100vh !important;
+                min-height: auto !important;
+                padding: 0 !important;
+            }
+
+            .header-area {
+                /* Sticky header that stays at top */
+                display: block !important;
+                padding: 3px 8px !important;
+                height: auto !important;
+                flex-shrink: 0 !important;
+                background-color: #fff !important;
+                position: sticky !important;
+                top: 0 !important;
+                z-index: 100 !important;
+            }
+
+            .results-area {
+                /* Scrollable content area */
+                display: block !important;
+                height: auto !important;
+                flex: 1 !important;
+                overflow-y: auto !important;
+                overflow-x: hidden !important;
+                max-height: none !important;
+                padding: 0 8px 20px 8px !important;
+                position: relative !important;
+            }
+
+            table {
+                margin-top: 3px !important;
+                margin-bottom: 20px !important;
+                position: static !important;
+            }
+
+            img {
+                max-width: 140px !important;
+                /* Smaller size for landscape to save vertical space */
+                margin-bottom: 2px !important;
+            }
+
+            p {
+                margin: 0.1em 0 !important;
+                font-size: 0.8em !important;
+            }
+
+            .back-link {
+                margin: 2px 0 !important;
+                font-size: 0.8em !important;
+            }
+
+            .variations-count {
+                font-size: 0.75em !important;
+            }
+
+            th, td {
+                padding: 3px 2px !important;
+                font-size: 0.75em !important;
+            }
+
+            /* Ensure sticky table headers work within scrollable area */
+            th {
+                position: sticky !important;
+                top: 0 !important;
+                z-index: 10 !important;
+            }
+        }
+
+        /* Desktop and tablet portrait - maintain fixed viewport behavior */
+        @media screen and (min-width: 901px), screen and (max-width: 900px) and (min-height: 501px) {
+            body {
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            .container {
+                height: 100vh;
+            }
+
+            .results-area {
+                overflow-y: auto;
+            }
+        }
     </style>
     <script>
-        // Scroll to highlighted row if it exists within the results area
+        // Scroll to highlighted row if it exists
         document.addEventListener("DOMContentLoaded", function () {
             const highlightedRow = document.querySelector(".highlight");
             if (highlightedRow) {
-                const resultsArea = document.querySelector(".results-area");
-                const table = highlightedRow.closest('table');
-
                 // Wait for layout to be complete
                 setTimeout(function () {
-                    // Get positions relative to the results area
-                    const resultsAreaRect = resultsArea.getBoundingClientRect();
-                    const highlightedRowRect = highlightedRow.getBoundingClientRect();
+                    // Check if we're in mobile landscape mode (width <= 900px AND height <= 500px)
+                    const isMobileLandscape = window.innerWidth <= 900 && window.innerHeight <= 500;
+                    
+                    if (isMobileLandscape) {
+                        // In mobile landscape, use natural page scrolling
+                        highlightedRow.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                    } else {
+                        // In other modes, scroll within the results area container
+                        const resultsArea = document.querySelector(".results-area");
+                        
+                        // Check if results area has scrollable content
+                        if (resultsArea && resultsArea.scrollHeight > resultsArea.clientHeight) {
+                            const resultsAreaRect = resultsArea.getBoundingClientRect();
+                            const highlightedRowRect = highlightedRow.getBoundingClientRect();
 
-                    // Calculate the offset from the top of the results area
-                    const rowOffsetFromTop = highlightedRowRect.top - resultsAreaRect.top + resultsArea.scrollTop;
+                            // Calculate the offset from the top of the results area
+                            const rowOffsetFromTop = highlightedRowRect.top - resultsAreaRect.top + resultsArea.scrollTop;
 
-                    // Calculate desired scroll position to center the row
-                    const resultsAreaHeight = resultsArea.clientHeight;
-                    const rowHeight = highlightedRow.offsetHeight;
-                    const targetScrollTop = rowOffsetFromTop - (resultsAreaHeight / 2) + (rowHeight / 2);
+                            // Calculate desired scroll position to center the row
+                            const resultsAreaHeight = resultsArea.clientHeight;
+                            const rowHeight = highlightedRow.offsetHeight;
+                            const targetScrollTop = rowOffsetFromTop - (resultsAreaHeight / 2) + (rowHeight / 2);
 
-                    // Add some extra padding to ensure the row is clearly visible
-                    const padding = rowHeight * 2;
-                    const finalScrollTop = Math.max(0, targetScrollTop - padding);
+                            // Add some extra padding to ensure the row is clearly visible
+                            const padding = rowHeight * 2;
+                            const finalScrollTop = Math.max(0, targetScrollTop - padding);
 
-                    resultsArea.scrollTop = finalScrollTop;
+                            resultsArea.scrollTop = finalScrollTop;
+                        } else {
+                            // Fallback to page scroll if container isn't scrollable
+                            highlightedRow.scrollIntoView({
+                                behavior: 'smooth',
+                                block: 'center'
+                            });
+                        }
+                    }
                 }, 100);
             }
         });
