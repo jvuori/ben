@@ -60,8 +60,8 @@
             height: auto;
             /* Let height scale naturally */
             border-radius: 4px;
-            margin-bottom: 15px;
-            /* Adjusted margin */
+            margin-bottom: 10px;
+            /* Reduced margin for tighter spacing */
             display: block;
             margin-left: auto;
             margin-right: auto;
@@ -70,8 +70,8 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
-            /* Adjusted margin */
+            margin-top: 15px;
+            /* Reduced margin for tighter spacing */
             font-size: 1em;
             /* Table font size relative to body */
         }
@@ -108,16 +108,18 @@
 
         p {
             text-align: center;
-            margin-top: 1em;
-            /* Add some top margin to paragraphs */
-            margin-bottom: 1em;
-            /* Add some bottom margin */
+            margin-top: 0.5em;
+            /* Reduced top margin */
+            margin-bottom: 0.5em;
+            /* Reduced bottom margin */
         }
 
         .back-link {
             display: inline-block;
-            margin-top: 20px;
-            /* Increased margin */
+            margin-top: 10px;
+            /* Reduced margin for tighter spacing */
+            margin-bottom: 5px;
+            /* Added small bottom margin */
             font-size: 1.1em;
             /* Make link slightly larger */
         }
@@ -142,16 +144,43 @@
             }
 
             .header-area {
-                padding: 10px;
+                padding: 8px;
+                /* Reduced padding on mobile */
             }
 
             .results-area {
-                padding: 0 10px 10px 10px;
+                padding: 0 8px 8px 8px;
+                /* Reduced padding on mobile */
+            }
+
+            img {
+                max-width: 260px;
+                /* Keep same size as main page */
+                margin-bottom: 8px;
+                /* Further reduced margin on mobile */
+            }
+
+            p {
+                margin-top: 0.3em;
+                /* Even smaller margins on mobile */
+                margin-bottom: 0.3em;
+                font-size: 0.95em;
+                /* Slightly smaller text on mobile */
+            }
+
+            .back-link {
+                margin-top: 6px;
+                /* Very tight spacing on mobile */
+                margin-bottom: 3px;
+                font-size: 1em;
+                /* Normal size on mobile */
             }
 
             table {
                 font-size: 0.9em;
                 /* Slightly smaller font on mobile */
+                margin-top: 8px;
+                /* Reduced top margin on mobile */
             }
 
             th,
@@ -163,6 +192,49 @@
             /* Ensure table doesn't overflow */
             .results-area {
                 overflow-x: hidden;
+            }
+        }
+
+        /* Extra small mobile screens */
+        @media (max-width: 480px) {
+            .header-area {
+                padding: 5px;
+                /* Minimal padding on very small screens */
+            }
+
+            img {
+                max-width: 260px;
+                /* Keep same size as main page even on very small screens */
+                margin-bottom: 5px;
+                /* Minimal margin */
+            }
+
+            p {
+                margin-top: 0.2em;
+                /* Minimal margins on very small screens */
+                margin-bottom: 0.2em;
+                font-size: 0.9em;
+                /* Smaller text */
+            }
+
+            .back-link {
+                margin-top: 4px;
+                /* Minimal spacing */
+                margin-bottom: 2px;
+                font-size: 0.95em;
+            }
+
+            table {
+                margin-top: 5px;
+                /* Minimal top margin */
+                font-size: 0.85em;
+                /* Smaller table text */
+            }
+
+            th,
+            td {
+                padding: 6px 4px;
+                /* Tighter cell padding */
             }
         }
     </style>
