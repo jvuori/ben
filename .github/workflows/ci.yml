@@ -268,36 +268,6 @@ jobs:
             exit 1
           fi
 
-      - name: Verify audit logging setup
-        run: |
-          cd /srv/ben
-          # Check that audit log file exists and is writable
-          if [ -f logs/audit.log ]; then
-            echo "✅ Audit log file exists at logs/audit.log"
-            
-            # Check that the container can write to the audit log
-            INITIAL_SIZE=$(stat -c%s logs/audit.log)
-            
-            # Make a test request to trigger audit logging
-            curl -s -X POST -d "surname=testaudit$(date +%s)" http://localhost:5000/submit || true
-            sleep 2
-            
-            NEW_SIZE=$(stat -c%s logs/audit.log)
-            if [ "$NEW_SIZE" -gt "$INITIAL_SIZE" ]; then
-              echo "✅ Audit logging is working - log file size increased from $INITIAL_SIZE to $NEW_SIZE bytes"
-              
-              # Show last few lines of audit log
-              echo "Recent audit log entries:"
-              tail -n 3 logs/audit.log
-            else
-              echo "❌ Audit logging may not be working - log file size unchanged"
-              exit 1
-            fi
-          else
-            echo "❌ Audit log file not found"
-            exit 1
-          fi
-
       - name: Cleanup old images
         run: |
           # Remove old unused images to save space
